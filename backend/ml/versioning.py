@@ -118,8 +118,16 @@ class ModelVersionManager:
 
     # ── Mutations ───────────────────────────────────────────────────────────
 
-    def save_version(self, version_num: int, model_path: str, metrics: dict, notes: str = ""):
-        """Enregistre une nouvelle version dans l'historique."""
+    def save_version(self, version_num: int, model_path: str, metrics: dict, notes: str = "",
+                     config_snapshot: Optional[dict] = None, report: Optional[dict] = None,
+                     analyst_comment: str = ""):
+        """Enregistre une nouvelle version dans l'historique.
+
+        Arguments additionnels stockés:
+          - config_snapshot: snapshot sérialisable de la configuration utilisée
+          - report: rapport de différences entre la version précédente et la nouvelle
+          - analyst_comment: commentaire libre saisi par l'analyste
+        """
         history = self._load_history()
         if "versions" not in history:
             history["versions"] = {}
@@ -130,6 +138,9 @@ class ModelVersionManager:
             "model_path": model_path,
             "metrics": metrics,
             "notes": notes,
+            "config_snapshot": config_snapshot,
+            "report": report,
+            "analyst_comment": analyst_comment,
             "active": False,
         }
         self._save_history(history)
